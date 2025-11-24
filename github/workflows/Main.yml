@@ -1,0 +1,36 @@
+name: Build APK
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Code Check karna
+      - uses: actions/checkout@v3
+
+      # 2. Space Khali karna (Zaroori hai)
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+      # 3. Buildozer Action (Ready-Made Robot)
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          command: buildozer android debug
+          buildozer_version: stable
+
+      # 4. APK Upload karna
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: Jarvis-APK
+          path: bin/*.apk
