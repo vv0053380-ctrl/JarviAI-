@@ -1,15 +1,23 @@
 name: Build APK
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Code ko check karega
       - uses: actions/checkout@v3
 
-      # Yeh 'Ready-Made Robot' hai jo App banata hai
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
@@ -17,9 +25,9 @@ jobs:
           command: buildozer android debug
           buildozer_version: stable
 
-      # App ko upload karega taaki aap download kar sako
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
           name: Jarvis-APK
           path: bin/*.apk
+          
